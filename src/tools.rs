@@ -11,7 +11,7 @@ pub async fn generate_context(context: &mut CommandContext, plugins: &[Plugin], 
         }
     }
 
-    Ok(if out.len() > 0 {
+    Ok(if !out.is_empty() {
         out.join("\n\n") + "\n\n"
     } else {
         "".to_string()

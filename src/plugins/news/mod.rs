@@ -20,7 +20,7 @@ pub struct NewsNoQueryError;
 
 impl Display for NewsNoQueryError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", "one of the 'news' tools did not receive enough info.")
+        write!(f, "one of the 'news' tools did not receive enough info.")
     }
 }
 

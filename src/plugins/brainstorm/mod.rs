@@ -18,7 +18,7 @@ pub struct BrainstormImpl;
 
 #[async_trait]
 impl CommandImpl for BrainstormImpl {
-    async fn invoke(&self, ctx: &mut CommandContext, args: ScriptValue) -> Result<CommandResult, Box<dyn Error>> {
+    async fn invoke(&self, _ctx: &mut CommandContext, _args: ScriptValue) -> Result<CommandResult, Box<dyn Error>> {
         Ok(CommandResult::ScriptValue(brainstorm().await?))
     }
 

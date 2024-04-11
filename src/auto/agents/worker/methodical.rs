@@ -1,11 +1,11 @@
 use std::{error::Error, collections::{HashSet}};
 
-use colored::Colorize;
+
 use serde::{Serialize, Deserialize};
 
 use crate::{CommandContext, AgentInfo, Message, auto::{run::Action, try_parse_json, agents::{worker::create_tool_list, prompt::{SUMMARIZE_MEMORIES, NoData, PERSONALITY, PersonalityInfo, CREATE_PLAN, CreatePlanInfo, NextStepInfo, NEXT_STEP, SAVE_ASSET, SaveAssetInfo}}, DisallowedAction, StaticUpdate, Update, NamedAsset}, Weights, Tool};
 
-use super::{log_yaml, use_tool};
+use super::{use_tool};
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct MethodicalThoughts {
@@ -102,7 +102,7 @@ pub fn run_method_agent(
     let tools = create_tool_list(&tools);
     
     let cloned_assets = context.assets.clone();
-    let assets_before: HashSet<&String> = cloned_assets.keys().collect();
+    let _assets_before: HashSet<&String> = cloned_assets.keys().collect();
 
     get_agent(context).llm.clear_history();
 
@@ -122,7 +122,7 @@ pub fn run_method_agent(
         }, 30
     )?;
 
-    let observations = if observations.len() == 0 {
+    let observations = if observations.is_empty() {
         "None found.".to_string()
     } else {
         observations.iter()
@@ -131,7 +131,7 @@ pub fn run_method_agent(
             .join("\n")
     };
 
-    let data = assets.unwrap_or(format!("No assets."));
+    let data = assets.unwrap_or("No assets.".to_string());
 
     planner.llm.prompt.push(Message::User(
         CREATE_PLAN.fill(CreatePlanInfo {
@@ -151,7 +151,7 @@ pub fn run_method_agent(
     let prompt = planner.llm.prompt.clone();
     let message_history = planner.llm.message_history.clone();
 
-    drop(planner);
+    let _ = planner;
 
     let agent = get_agent(context);
     agent.llm.prompt = prompt;
@@ -173,7 +173,7 @@ pub fn run_method_agent(
         agent.llm.message_history.push(Message::Assistant(thoughts.raw));
         let thoughts = thoughts.data;
 
-        drop(agent);
+        let _ = agent;
 
         listen_to_update(&Update::StaticAgent(StaticUpdate::Thoughts(thoughts.clone())))?;
         allow_action(&thoughts.action)?;
@@ -220,7 +220,7 @@ pub fn run_method_agent(
         let asset_content = agent.llm.model.get_response_sync(&agent.llm.get_messages(), Some(800), Some(0.3))?;
         agent.llm.message_history.pop();
 
-        drop(agent);
+        let _ = agent;
 
         *context.assets
             .entry(asset.name.clone())
@@ -235,8 +235,8 @@ pub fn run_method_agent(
 
     add_memories(agent, listen_to_update)?;
 
-    let asset_str = if changed_assets.len() == 0 {
-        format!("No assets changed.")
+    let asset_str = if changed_assets.is_empty() {
+        "No assets changed.".to_string()
     } else {
         changed_assets .iter()
             .map(|el| format!("## Asset `{}`\n{}", el.0, el.1))
@@ -247,5 +247,5 @@ pub fn run_method_agent(
     let resp = format!("Assets:\n\n{}", asset_str);
     
 
-    return Ok(resp);
+    Ok(resp)
 }

@@ -1,7 +1,7 @@
 use std::{collections::HashMap, error::Error, fmt::Display, any::Any};
 
 use async_trait::async_trait;
-use serde::{Serialize, de::DeserializeOwned, Deserialize};
+use serde::{Serialize, de::DeserializeOwned};
 use serde_json::Value;
 
 #[derive(Debug, Clone)]
@@ -26,7 +26,7 @@ impl<'a> Display for CommandNoArgError<'a> {
 
 impl<'a> Error for CommandNoArgError<'a> {}
 
-use crate::{LLM, ScriptValue, MemorySystem, AutoType};
+use crate::{LLM, ScriptValue, MemorySystem};
 
 #[async_trait]
 pub trait PluginData: Any + Send + Sync {
@@ -34,6 +34,12 @@ pub trait PluginData: Any + Send + Sync {
 }
 
 pub struct PluginStore(pub HashMap<String, Box<dyn PluginData>>);
+
+impl Default for PluginStore {
+    fn default() -> Self {
+        Self::new()
+    }
+}
 
 impl PluginStore {
     pub fn new() -> Self {

@@ -15,6 +15,7 @@ pub struct Classification {
     classification: String,
 }
 
+#[allow(dead_code)]
 pub fn is_task(smartgpt: &mut SmartGPT, task: &str) -> Result<bool, Box<dyn Error>> {
     let SmartGPT { 
         context,  ..
@@ -23,23 +24,23 @@ pub fn is_task(smartgpt: &mut SmartGPT, task: &str) -> Result<bool, Box<dyn Erro
     
     context.agents.fast.llm.clear_history();
     
-    context.agents.fast.llm.prompt.push(Message::Assistant(format!(r#"
+    context.agents.fast.llm.prompt.push(Message::Assistant(r#"
 Given a message respond with one of the following.
 
 "conversational": A conversational message
 "task": A task or request
-"#)));
+"#.to_string()));
 
 
-    context.agents.fast.llm.message_history.push(Message::User(format!(r#"
+    context.agents.fast.llm.message_history.push(Message::User(r#"
 Respond in this format:
 
 ```json
-{{
+{
     "thoughts on how to classify it": "...",
     "message classification": "..."
-}}
-```"#)));
+}
+```"#.to_string()));
 
     context.agents.fast.llm.message_history.push(Message::User(format!(
         "Request to Classify: {task}"

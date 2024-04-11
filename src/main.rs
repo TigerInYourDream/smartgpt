@@ -8,7 +8,7 @@ pub struct NoThoughtError;
 
 impl Display for NoThoughtError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", "no thought detected.")
+        write!(f, "no thought detected.")
     }
 }
 
@@ -49,7 +49,7 @@ fn main() -> Result<(), Box<dyn Error>> {
             }
         }
 
-        let tools = if plugin.tools.len() == 0 {
+        let tools = if plugin.tools.is_empty() {
             vec![ "<no tools>".white() ]
         } else {
             plugin.tools.iter()

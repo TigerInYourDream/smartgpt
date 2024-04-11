@@ -53,9 +53,7 @@ pub async fn file_write(_ctx: &mut CommandContext, args: ScriptValue, append: bo
 pub async fn file_list(_ctx: &mut CommandContext, _args: ScriptValue) -> Result<ScriptValue, Box<dyn Error>> {
     let files = fs::read_dir("./files/")?;
     let files = files
-        .map(|el| el.map(|el| el.path().display().to_string()))
-        .filter(|el| el.is_ok())
-        .map(|el| el.unwrap())
+        .flat_map(|el| el.map(|el| el.path().display().to_string()))
         .collect::<Vec<_>>();
 
     Ok(ScriptValue::List(files.iter().map(|el| el.clone().into()).collect()))
@@ -131,12 +129,10 @@ impl PluginCycle for FileCycle {
     async fn create_context(&self, _context: &mut CommandContext, _previous_prompt: Option<&str>) -> Result<Option<String>, Box<dyn Error>> {
         let files = fs::read_dir("files")?;
         let files = files
-            .map(|el| el.map(|el| el.path().display().to_string()))
-            .filter(|el| el.is_ok())
-            .map(|el| el.unwrap())
+            .flat_map(|el| el.map(|el| el.path().display().to_string()))
             .collect::<Vec<_>>();
 
-        Ok(Some(if files.len() == 0 {
+        Ok(Some(if files.is_empty() {
             "Files: No saved files.".to_string()
         } else {
             format!("Files: {} (Consider reading these.)", files.join(", "))

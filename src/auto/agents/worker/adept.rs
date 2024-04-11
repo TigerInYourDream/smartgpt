@@ -1,8 +1,8 @@
 use std::{error::Error, ops::Deref, fmt::Display};
-use colored::Colorize;
+
 use serde::{Serialize, Deserialize};
 
-use crate::{CommandContext, AgentInfo, Message, auto::{try_parse_json, agents::{worker::{log_yaml, run_method_agent}, prompt::{CONCISE_PLAN, ConcisePlanInfo, PersonalityInfo, PERSONALITY, THOUGHTS, ThoughtInfo, NewThoughtInfo, NEW_THOUGHTS}}, run::Action, DisallowedAction, DynamicUpdate}, ScriptValue};
+use crate::{CommandContext, AgentInfo, Message, auto::{try_parse_json, agents::{worker::{run_method_agent}, prompt::{CONCISE_PLAN, ConcisePlanInfo, PersonalityInfo, PERSONALITY, THOUGHTS, ThoughtInfo, NewThoughtInfo, NEW_THOUGHTS}}, run::Action, DisallowedAction, DynamicUpdate}, ScriptValue};
 
 use super::Update;
 
@@ -74,7 +74,7 @@ pub fn get_response(
 
             let mut data: Option<String> = None;
 
-            if assets.len() > 0 {
+            if !assets.is_empty() {
                 data = Some(
                     assets.iter()
                         .map(|el| format!("## Asset `${el}`:\n{}", context.assets[el]))
@@ -87,7 +87,7 @@ pub fn get_response(
             Ok(out)
         },
         "brainstorm" => {
-            Ok(format!("Successfully brainstormed."))
+            Ok("Successfully brainstormed.".to_string())
         }
         "final_response" => {
             let FinalResponseArgs { response } = thoughts.decision.args.parse()?;
@@ -95,7 +95,7 @@ pub fn get_response(
             Ok(response)
         },
         decision_type => {
-            return Err(Box::new(NoDecisionTypeError(decision_type.to_string()))) 
+            Err(Box::new(NoDecisionTypeError(decision_type.to_string()))) 
         }
     }
 }
@@ -136,13 +136,13 @@ pub fn run_brain_agent(
 
     listen_to_update(&Update::DynamicAgent(DynamicUpdate::Thoughts(thoughts.clone())))?;
 
-    drop(agent);
+    let _ = agent;
     let mut response = get_response(
         context, 
         &|ctx| &mut ctx.agents.static_agent, 
         &|ctx| &mut ctx.agents.planner, 
         &thoughts, 
-        &personality,
+        personality,
         allow_action,
         listen_to_update
     )?;
@@ -153,12 +153,11 @@ pub fn run_brain_agent(
     
     loop {
         let cloned_assets = context.assets.clone();
-        let asset_list = if cloned_assets.len() == 0 {
-            format!("No assets.")
+        let _asset_list = if cloned_assets.is_empty() {
+            "No assets.".to_string()
         } else {
             cloned_assets
-                .keys()
-                .map(|asset| asset.clone())
+                .keys().cloned()
                 .collect::<Vec<_>>()
                 .join(", ")
         };
@@ -182,7 +181,7 @@ pub fn run_brain_agent(
             &|ctx| &mut ctx.agents.static_agent, 
             &|ctx| &mut ctx.agents.planner, 
             &thoughts, 
-            &personality,
+            personality,
             allow_action,
             listen_to_update
         )?;

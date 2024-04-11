@@ -37,7 +37,7 @@ impl Display for Message {
             Self::User(_) => "USER"
         };
 
-        write!(f, "-- {header} --\n")?;
+        writeln!(f, "-- {header} --")?;
         write!(f, "{}", self.content())
     }
 }
@@ -193,7 +193,7 @@ pub fn format_prompt(messages: &[Message]) -> String {
             },
             message.content()
         ));
-        out.push_str("\n");
+        out.push('\n');
     }
 
     out.push_str("ASSISTANT: ");

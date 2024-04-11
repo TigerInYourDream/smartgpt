@@ -32,7 +32,7 @@ impl Debug for Primitive {
                         .map(|el| el.to_string())
                         .collect::<Vec<_>>()
                         .join("");
-                    text.push_str(&r#"...""#);
+                    text.push_str(r#"...""#);
                     write!(f, "{}", text)
                 } else {
                     write!(f, "{:?}", string)
@@ -85,7 +85,7 @@ impl Debug for Expression {
             }
             Expression::Dict(dict) => {
                 write!(f, "{{")?;
-                if dict.len() > 0 {
+                if !dict.is_empty() {
                     write!(f, " ")?;
                 }
                 for (ind, (key, value)) in dict.iter().enumerate() {
@@ -205,7 +205,7 @@ pub fn to_expr(node: ExprKind) -> Result<Expression, GPTParseError> {
             }
 
             let hash_map: HashMap<String, Expression> = parsed_keys.into_iter()
-                .zip(parsed_values.into_iter())
+                .zip(parsed_values)
                 .collect();
 
             Ok(Expression::Dict(hash_map))
@@ -226,7 +226,7 @@ pub enum Statement {
 pub fn to_statement(statement: StmtKind) -> Result<Statement, GPTParseError> {
     match statement {
         StmtKind::Expr { value } => {
-            to_expr(value.node).map(|el| Statement::Expression(el))
+            to_expr(value.node).map(Statement::Expression)
         }
         StmtKind::Assign { targets, value, .. } => {
             let target = to_expr(targets[0].node.clone())?;
