@@ -98,7 +98,7 @@ impl MemorySystem for QdrantMemorySystem {
         min_count: usize,
     ) -> Result<Vec<RelevantMemory>, Box<dyn Error>> {
         let embedding = llm.model.get_base_embed(memory).await?;
-        let latest_point_id_option = self.latest_point_id.lock().await.clone();
+        let latest_point_id_option = *self.latest_point_id.lock().await;
         let latest_point_id = latest_point_id_option.unwrap_or(0);
 
         let mut points: Vec<PointId> = vec![];
@@ -151,13 +151,10 @@ impl MemorySystem for QdrantMemorySystem {
 
         let relevant_memories_result: Result<Vec<_>, _> = search_result
             .iter()
-            .map(|point| convert_to_relevant_memory(point))
+            .map(convert_to_relevant_memory)
             .collect();
 
-        match relevant_memories_result {
-            Ok(relevant_memories) => Ok(relevant_memories),
-            Err(e) => Err(e),
-        }
+        relevant_memories_result
     }
 
     async fn decay_recency(&mut self, _decay_factor: f32) -> Result<(), Box<dyn Error>> {

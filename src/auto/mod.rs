@@ -1,13 +1,14 @@
 use std::{fmt::Display, error::Error};
 
 use serde::{ Serialize, de::DeserializeOwned};
-use json5;
+
 
 use colored::Colorize;
 use serde_json::ser::PrettyFormatter;
 
 use crate::{LLM, SmartGPT};
 
+#[allow(hidden_glob_reexports)]
 use self::{agents::{processing::find_text_between_braces, worker::run_worker}};
 
 mod agents;
@@ -15,7 +16,7 @@ mod run;
 mod responses;
 mod classify;
 
-pub use run::{Action};
+pub use run::Action;
 pub use agents::worker::*;
 
 #[derive(Debug)]
@@ -43,7 +44,7 @@ pub fn run_auto(
 
     drop(context);
 
-    Ok(run_worker(smartgpt, task.clone(), &smartgpt.personality.clone(), allow_action, listen_to_update)?)
+    run_worker(smartgpt, task, &smartgpt.personality.clone(), allow_action, listen_to_update)
 }
 
 #[derive(Debug, Clone)]
@@ -51,7 +52,7 @@ pub struct CannotParseError;
 
 impl Display for CannotParseError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", "could not parse.")
+        write!(f, "could not parse.")
     }
 }
 
@@ -104,9 +105,9 @@ pub fn try_parse_base<T : DeserializeOwned>(llm: &LLM, tries: usize, max_tokens:
         let response = llm.model.get_response_sync(&llm.get_messages(), max_tokens, temperature)?;
         let processed_response = response.trim();
         let processed_response = processed_response.strip_prefix("```")
-            .unwrap_or(&processed_response)
+            .unwrap_or(processed_response)
             .to_string();
-        let processed_response = processed_response.strip_prefix(&format!("{lang}"))
+        let processed_response = processed_response.strip_prefix(&lang.to_string())
             .unwrap_or(&response)
             .to_string();
         let processed_response = processed_response.strip_suffix("```")

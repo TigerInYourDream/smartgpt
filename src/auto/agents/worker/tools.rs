@@ -13,25 +13,23 @@ pub fn create_filtered_tool_list(header: &str, tools: &[&Tool], tool_type: ToolT
 
         let Tool { name, purpose, args, .. } = tool;
 
-        let mut schema = format!("{{ ");
+        let mut schema = "{ ".to_string();
         for arg in args {
             let ToolArgument { name, example } = arg;
             schema.push_str(&format!(r#""{name}": {example}, "#))
         }
         schema = schema.trim_end_matches(", ").to_string();
 
-        schema.push_str(&format!(" }}"));
+        schema.push_str(" }");
 
         prompt.push('\n');
         prompt.push_str(&format!("{name} {schema} - {purpose}"));
     }
 
-    return prompt;
+    prompt
 }
 
 pub fn create_tool_list(tools: &[&Tool]) -> String {
-    vec![
-        create_filtered_tool_list("Resources", tools, ToolType::Resource),
-        create_filtered_tool_list("Actions", tools, ToolType::Action { needs_permission: false })
-    ].join("\n\n")
+    [create_filtered_tool_list("Resources", tools, ToolType::Resource),
+        create_filtered_tool_list("Actions", tools, ToolType::Action { needs_permission: false })].join("\n\n")
 }

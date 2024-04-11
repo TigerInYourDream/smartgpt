@@ -43,7 +43,7 @@ impl MemorySystem for RedisMemorySystem {
                 recency: 1.,
                 recall: 1.,
             },
-            embedding: embedding
+            embedding
         };
 
         let mut latest_point_id = self.latest_point_id.lock().await;
@@ -70,7 +70,7 @@ impl MemorySystem for RedisMemorySystem {
             Bulk(items) => {
                 items
                     .chunks_exact(2)
-                    .filter_map(|chunk| match (chunk.get(0), chunk.get(1)) {
+                    .filter_map(|chunk| match (chunk.first(), chunk.get(1)) {
                         (Some(Data(key)), Some(Data(value))) => {
                             let score: f32 = String::from_utf8_lossy(value)
                                 .parse()
@@ -146,7 +146,7 @@ impl MemoryProvider for RedisProvider {
                 Ok(()) => {Ok(())}
                 Err(err) => {
                     eprintln!("Failed to create vector index: {}", err);
-                    return Err(Box::new(err));
+                    Err(Box::new(err))
                 }
             }
         })?;

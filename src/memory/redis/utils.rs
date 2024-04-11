@@ -74,8 +74,7 @@ pub async fn search_vector_field(
 
     let query_blob_str = STANDARD.encode(query_blob);
 
-    Ok(
-        execute_redis_tool::<redis::Value, _>(
+    execute_redis_tool::<redis::Value, _>(
             con,
             "FT.SEARCH",
             &[
@@ -88,8 +87,7 @@ pub async fn search_vector_field(
                 "DIALECT",
                 "2",
             ],
-        ).await?
-    )
+        ).await
 }
 
 pub async fn set_json_record(
@@ -103,7 +101,7 @@ pub async fn set_json_record(
         &[
             point_id,
             "$",
-            &serde_json::to_value(&embedded_memory)?.to_string(),
+            &serde_json::to_value(embedded_memory)?.to_string(),
         ],
     ).await
 }

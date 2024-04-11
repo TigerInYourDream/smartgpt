@@ -3,7 +3,7 @@ use async_trait::async_trait;
 use colored::Colorize;
 use readability::extractor;
 use reqwest::{Client, header::{USER_AGENT, HeaderMap}};
-use textwrap::wrap;
+
 
 mod extract;
 
@@ -51,7 +51,7 @@ pub struct BrowseNoArgError;
 
 impl Display for BrowseNoArgError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", "'browse-article' tool did not receive one of its arguments.")
+        write!(f, "'browse-article' tool did not receive one of its arguments.")
     }
 }
 
@@ -63,7 +63,7 @@ pub struct NoContentError {
     help: String
 }
 
-fn chunk_text(llm: &LLM, text: &str, chunk_size: usize) -> Result<Vec<String>, Box<dyn Error>> {
+fn chunk_text(llm: &LLM, text: &str, _chunk_size: usize) -> Result<Vec<String>, Box<dyn Error>> {
     let tokens = llm.get_tokens_from_text(text)?;
 
     Ok(

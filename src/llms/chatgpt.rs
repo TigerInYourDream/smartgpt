@@ -4,7 +4,7 @@ use async_openai::{Client, types::{CreateChatCompletionResponse, CreateChatCompl
 use async_trait::async_trait;
 use serde::{Serialize, Deserialize};
 use serde_json::Value;
-use tiktoken_rs::{async_openai::{get_chat_completion_max_tokens, num_tokens_from_messages}, model::get_context_size, cl100k_base, r50k_base};
+use tiktoken_rs::{async_openai::{get_chat_completion_max_tokens, num_tokens_from_messages}, model::get_context_size, r50k_base};
 
 use crate::{LLMProvider, Message, LLMModel};
 

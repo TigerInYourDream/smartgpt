@@ -12,7 +12,7 @@ pub struct WolframNoQueryError;
 
 impl Display for WolframNoQueryError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", "one of the 'wolfram' tools did not receive enough info.")
+        write!(f, "one of the 'wolfram' tools did not receive enough info.")
     }
 }
 
@@ -64,7 +64,7 @@ pub async fn wolfram(ctx: &mut CommandContext, args: ScriptValue) -> Result<Scri
     let WolframArgs { query } = args.parse()?;
     let response = ask_wolfram(ctx, &query).await?;
 
-    let response = if response.trim().len() > 0 {
+    let response = if !response.trim().is_empty() {
         response
     } else {
         "Sorry, but Wolfram Alpha did not understand your query. Please try using another tool.".to_string()

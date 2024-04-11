@@ -108,7 +108,7 @@ fn create_llm_model(agent: HashMap<String, Value>) -> Result<Box<dyn LLMModel>, 
         .find(|el| el.get_name().to_ascii_lowercase() == model_name.to_ascii_lowercase())
         .ok_or(NoLLMError)?;
 
-    Ok(llm_provider.create(model_config.clone())?)
+    llm_provider.create(model_config.clone())
 }
 
 fn create_memory_model(agent: HashMap<String, Value>) -> Result<Box<dyn MemorySystem>, Box<dyn Error>> {
@@ -119,7 +119,7 @@ fn create_memory_model(agent: HashMap<String, Value>) -> Result<Box<dyn MemorySy
         .find(|el| el.get_name().to_ascii_lowercase() == model_name.to_ascii_lowercase())
         .ok_or(NoMemorySystemError)?;
 
-    Ok(memory_provider.create(model_config.clone())?)
+    memory_provider.create(model_config.clone())
 }
 
 pub fn create_agent(agent: AgentConfig) -> Result<AgentInfo, Box<dyn Error>> {
@@ -142,7 +142,7 @@ pub fn load_config(config: &str) -> Result<(String, SmartGPT), Box<dyn Error>> {
     let mut exit = false;
     for (name, _) in &config.plugins {
         let plugin = plugins.iter().find(|el| el.name.to_ascii_lowercase() == name.to_ascii_lowercase());
-        if let None = plugin {
+        if plugin.is_none() {
             println!("{}: No plugin named \"{}\".", "Error".red(), name);
             exit = true;
         }

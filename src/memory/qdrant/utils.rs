@@ -55,7 +55,7 @@ pub fn create_initial_collection(name: String) -> CreateCollection {
         ..Default::default()
     });
 
-    return create_collection;
+    create_collection
 }
 
 pub fn convert_to_relevant_memory(point: &ScoredPoint) -> Result<RelevantMemory, Box<dyn Error>> {

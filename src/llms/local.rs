@@ -72,8 +72,8 @@ impl LLMModel for LocalLLM {
         2048
     }
 
-    fn get_tokens_from_text(&self, text: &str) -> Result<Vec<String>, Box<dyn Error>> {
-        return Ok(vec![])
+    fn get_tokens_from_text(&self, _text: &str) -> Result<Vec<String>, Box<dyn Error>> {
+        Ok(vec![])
     }
 }
 
@@ -104,7 +104,7 @@ impl LLMProvider for LocalLLMProvider {
             mmap
         } = serde_json::from_value(value)?;
         let model = load_dynamic(
-            match model_type.to_ascii_lowercase().replace("-", "").as_str() {
+            match model_type.to_ascii_lowercase().replace('-', "").as_str() {
                 "llama" => llm::ModelArchitecture::Llama,
                 "bloom" => llm::ModelArchitecture::Bloom,
                 "gpt2" => llm::ModelArchitecture::Gpt2,
@@ -114,10 +114,10 @@ impl LLMProvider for LocalLLMProvider {
                     return Err(Box::new(NoLocalModelError(format!("unknown model: {model_type}"))))
                 }
             }, 
-            &Path::new(&model_path), 
+            Path::new(&model_path), 
             ModelParameters {
                 prefer_mmap: mmap.unwrap_or(true),
-                n_context_tokens: n_context_tokens,
+                n_context_tokens,
                 ..Default::default()
             },
             |_| {}

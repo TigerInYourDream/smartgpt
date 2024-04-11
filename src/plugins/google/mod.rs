@@ -14,7 +14,7 @@ pub struct GoogleNoQueryError;
 
 impl Display for GoogleNoQueryError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", "'google' tool did not receive a query.")
+        write!(f, "'google' tool did not receive a query.")
     }
 }
 

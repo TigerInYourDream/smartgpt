@@ -15,5 +15,5 @@ pub fn use_tool(
     let agent = get_agent(context);
     agent.llm.clear_history();
 
-    return Ok(out);
+    Ok(out)
 }

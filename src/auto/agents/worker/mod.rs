@@ -1,5 +1,5 @@
 use std::{error::Error};
-use crate::{SmartGPT, AgentInfo, auto::{run::Action, DisallowedAction}};
+use crate::{SmartGPT, auto::{run::Action, DisallowedAction}};
 use serde::Serialize;
 
 mod adept;
